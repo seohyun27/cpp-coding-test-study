@@ -27,9 +27,10 @@ using namespace std;
 
 
 
+## 문법
 
-## for문
-### 참조 접근
+### for문
+#### 참조 접근
 ```cpp
 for (auto& p : m) { // map m에 auto&로 참조 접근
     // p.first는 해당 요소의 key값
@@ -39,8 +40,8 @@ for (auto& p : m) { // map m에 auto&로 참조 접근
 
 
 
-## 배열
-### 요소 개수
+### 배열
+#### 요소 개수
 set s의 요소 개수 구하기, 배열 nums의 요소 개수 구하기 등
 ```cpp
 s.size()
@@ -49,22 +50,22 @@ nums.size();
 
 
 
-## algorithm
-### Min/Max
+### algorithm
+#### Min/Max
 2가지 중에 더 작은/큰 값을 리턴
 ```cpp
 min(10, 15);
 ```
 
 
-## 문자열
-### 길이
+### 문자열
+#### 길이
 문자열 p의 길이
 ```cpp
 p.length();
 ```
 
-### 서브 스트링
+#### 서브 스트링
 문자열 p의 서브 스트링 구하기. 인덱스 0에서부터 i만큼 잘라라
 ```cpp
 p.substr(0,i);
