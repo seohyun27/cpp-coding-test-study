@@ -18,7 +18,7 @@ int solution(vector<int> nums)
     int type = 0;
     int answer = 0;
     
-    for(auto p : nums){ // 포켓몬 종류 set으로 정리
+    for(auto& p : nums){ // 포켓몬 종류 set으로 정리
         s.insert(p);
     }
     

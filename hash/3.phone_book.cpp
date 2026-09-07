@@ -18,11 +18,11 @@ using namespace std;
 bool solution(vector<string> phone_book) {  // 핸드폰 번호는 문자열!!
     unordered_set <string> s;
     
-    for(auto p : phone_book){               // set에다가 넣어서 정리
+    for(auto& p : phone_book){               // set에다가 넣어서 정리
         s.insert(p);
     }
     
-    for(auto p : s){                        // set에서 어떤 문자열 하나 꺼내기
+    for(auto& p : s){                        // set에서 어떤 문자열 하나 꺼내기
         for(int i = 1; i < p.length(); i++){// 문자열을 자를 때는 1글자부터 p.length()-1글자까지 자르기 
             string sub = p.substr(0,i);     // 그 문자열의 부분 문자열 생성
             if(s.find(sub) != s.end()){     // set 안에 부분 문자열과 일치하는 문자열이 있다면

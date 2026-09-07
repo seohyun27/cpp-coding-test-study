@@ -16,11 +16,11 @@ using namespace std;
 string solution(vector<string> participant, vector<string> completion) {
     unordered_map<string, int> m; // unordered_map 선언
     
-    for(auto p : participant){ // 맵 participant의 모든 요소를 꺼내서 p로 순회 
+    for(auto& p : participant){ // 맵 participant의 모든 요소를 꺼내서 p로 순회 
         m[p]++;
     }
     
-    for(auto p : completion){ // 완주자 제외
+    for(auto& p : completion){ // 완주자 제외
         m[p]--;
     }
 
