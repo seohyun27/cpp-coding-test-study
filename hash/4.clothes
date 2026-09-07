@@ -10,9 +10,6 @@ clothes 입력 예 : [["yellow_hat", "headgear"], ["blue_sunglasses", "eyewear"]
 */
 
 
-
-
-
 #include <string>
 #include <vector>
 #include <unordered_map>
