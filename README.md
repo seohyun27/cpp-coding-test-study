@@ -71,7 +71,8 @@ for (auto& p : m) { // map m에 auto&로 참조 접근
 #### 코드 예제
 ```cpp
 vec.push_back(x);    // vector: 맨 뒤에 추가
-s.insert(x);          // set: 중복 없이 추가
+s.insert(x);         // set: 중복 없이 추가
+m[key]++;            // map : key가 없다면 자동으로 0부터 시작 
 ```
 
 <br>
@@ -81,6 +82,19 @@ set s의 요소 개수 구하기, 배열 nums의 요소 개수 구하기 등
 ```cpp
 s.size()
 nums.size();
+```
+
+<br>
+
+### 4. 기존 요소 찾기
+#### set의 경우
+
+`s.find(key)`를 통해 key의 존재 여부를 찾음. key가 존재한다면 이터레이터 반환. 존재하지 않는다면 `s.end()`를 반환함.
+
+```cpp
+if(s.find("dog") != s.end()){
+    // s라는 set 안에 dog라는 문자열이 존재한다면
+}
 ```
 
 <br>
