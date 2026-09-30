@@ -33,14 +33,14 @@ using namespace std;
 | `vector<vector<T>>` | `vector<T>` (안쪽 벡터) | `[0]`, `[1]`... (인덱스) |
 | `unordered_map<K,V>` | `pair<K,V>` | `.first`, `.second` |
 
-### vector<T>
+#### vector<T>
 ```cpp
 for (const auto& p : v) {
     // p가 곧 원소
 }
 ```
 
-### vector<vector<T>>
+#### vector<vector<T>>
 ```cpp
 for (const auto& p : v) {
     // p는 벡터 안의 벡터를 반환. 해당 벡터 내의 요소들에 접근할 때는 인덱스를 사용
@@ -48,7 +48,7 @@ for (const auto& p : v) {
 }
 ```
 
-### unordered_map<K,V>
+#### unordered_map<K,V>
 ```cpp
 for (auto& p : m) { // map m에 auto&로 참조 접근
     // p.first는 해당 요소의 key값
@@ -62,7 +62,7 @@ for (auto& p : m) { // map m에 auto&로 참조 접근
 
 ## 자료구조별 요소
 
-### 요소 추가하기 (insert vs push_back)
+### 1. 요소 추가하기 (insert vs push_back)
 | 자료구조 | 추가 함수 | 이유 |
 |---|---|---|
 | `vector` | `push_back` | 맨 뒤에 추가. 벡터에서 insert를 사용하려면 위치를 지정해줘야 함 |
@@ -78,7 +78,7 @@ m[key]++;            // map : key가 없다면 자동으로 0부터 시작
 
 <br>
 
-### 기존 요소 찾기 - set
+### 2. 기존 요소 찾기 - set
 
 `s.find(key)`를 통해 key의 존재 여부를 찾음. key가 존재한다면 이터레이터 반환. 존재하지 않는다면 `s.end()`를 반환함.
 
@@ -168,6 +168,8 @@ vector<int> new_array(v.begin() + 1, v.begin() + 3);
 ## queue
 - 가장 앞에서의 삭제가 빈번하다면 실행 시간을 위해 큐를 사용할 것
 - `queue<int> q`로 선언
+- 인덱스 접근, for문 순회 불가
+- `size()`, `empty()` 등의 함수 사용 가능
 
 #### 요소 넣기
 - 선입선출이므로 요소는 뒤로 들어감
@@ -198,6 +200,115 @@ q.back();
 <br>
 
 
+## 우선순위 queue
+- `#include <queue>`에 포함
+- 가장 큰 값 혹은 가장 작은 값이 매번 달라진다면 우선순위 큐를 사용
+- 일반 큐와 다르게 `front()`, `back()` 사용 불가
+- 삭제 및 조회는 `top()`에서만 일어남
+- 이외 일반 큐와 동일
+
+### 선언
+#### 일반 우선순위 큐
+```cpp
+priority_queue<int> q; // 현재 요소들 기준 가장 큰 값이 top
+```
+
+#### 최소 우선순위 큐
+```cpp
+priority_queue<int, vector<int>, greater<int>> mq; // 가장 작은 값이 top
+```
+- 첫 번째 int는 큐의 타입, 두 번째 벡터는 관습적 작성, 세 번째 greater<>는 오름차순
+- 오름차순이므로 작은 값부터 top에 담기게 됨
+
+### 삽입, 삭제, 조회
+#### 요소 넣기
+```cpp
+q.push(x);
+```
+
+#### 요소 지우기
+```cpp
+q.pop(); // top의 요소가 삭제
+```
+
+#### top의 요소 확인
+```cpp
+q.top();
+```
+
+
+<br>
+
+
+## BFS
+- 출발점에서 목적지까지 최소 몇 번만에 갈 수 있는지를 구하는 알고리즘
+- 최단 거리, 최소 횟수, 몇 번만에, 한 칸씩 이동 등등
+- **BFS 문제에서 원본 크기의 거리 배열과 큐를 만들어 사용해야 한다는 것을 반드시 기억할 것!!**
+
+### 1. 논리
+1. 원본 크기의 거리 배열은 -1로 초기화
+2. 출발점을 거리 배열에서 0으로 표기하고 큐에 넣기
+3. 큐에서 기준점을 하나 꺼냄
+4. 기준점에서 상하좌우 4칸을 살핌
+5. 만약 다음 위치가 원본 배열 밖이거나, 원본 배열에서 막힌 길을 가지고 있거나, 거리 배열에 -1이 아닌 값이 있다면(이미 확인) 무시하고 진행
+6. 거리를 '이전 거리 + 1'로 표기하고 큐에 해당 위치들을 넣음
+7. 상하좌우를 살피는 게 끝났다면 다음 기준점을 큐에서 꺼냄
+8. 큐가 비었다면 반복 종료
+9. 만약 도착점의 거리 배열이 여전히 -1이라면 도달 불가
+
+### 구현
+- 원본 2차원 배열 maps 존재
+- 원본과 같은 크기의 -1로 초기화된 거리 배열 존재
+- x, y 좌표를 저장하기 위한 pair<int, int> 타입의 queue 존재
+- maps의 값이 0이라면 길이 없음
+
+```cpp
+int n = maps.size();    // maps 내부 벡터 개수 
+int m = maps[0].size(); // maps 내부 벡터 안의 원소 개수
+
+vector<vector<int>> dist(n, vector<int>(m, -1));
+queue<pair<int, int>> q;
+
+q.push({0, 0}); // 시작점 큐에 넣기
+dist[0][0] = 0; //출발칸을 개수에 포함한다면 0 대신 1을 사용할 것
+
+vector<int> mx = {0, 0, 1, -1}; // x의 움직임 배열
+vector<int> my = {1, -1, 0, 0};
+
+while(q.empty() != true){
+    pair<int, int> stand = q.front();
+    q.pop();
+    
+    // pair이므로 first, second로 접근
+    int x = stand.first;
+    int y = stand.second;
+
+    // 상하좌우 4번 반복
+    for(int i = 0; i < 4; i++){
+        int nx = x + mx[i];
+        int ny = y + my[i];
+
+        if(nx < 0 || ny < 0 || nx > n-1 || ny > m-1) continue;
+        if(maps[nx][ny] == 0) continue;
+        if(dist[nx][ny] != -1) continue;
+
+        q.push({nx, ny});
+        dist[nx][ny] = dist[x][y] + 1;
+    }
+}
+```
+
+- dist 거리 배열을 완성한 후 목적지가 되는 장소의 dist[_][_] 값을 반환하면 됨
+- dist[_][_] 값이 -1일 때 도달 불가
+
+### 주의
+- 코드 내부의 x, y는 수학적의미의 x축, y축이 아님
+- **dist[x][y]이므로 x가 배열 내부의 벡터, y가 벡터 내부의 요소를 뜻한다는 것을 잊지 말 것**
+
+
+<br>
+
+
 ## algorithm
 
 ### 1. Min/Max
@@ -214,7 +325,7 @@ sort(v.begin(), v.end());  // 전체 정렬
 sort(v.begin(), v.begin() + 3);  // 벡터의 일부만 정렬 (이 경우 3개의 원소)
 ```
 
-사용자 지정함수
+#### 사용자 지정함수
 - 두 개의 항목을 비교하고자 할 때
 ```cpp
 bool comp(int a, int b){
@@ -224,7 +335,7 @@ bool comp(int a, int b){
 sort(numbers.begin(), numbers.end(), comp);
 ```
 
-사용자 지정함수
+#### 사용자 지정함수
 - 두 개의 배열을 비교하고자 할 때
 - 배열 내부에서 두 가지 이상의 비교 기준을 함께 사용하고자 할 때
 - 필요하다면 if 문을 늘려 규칙 추가 가능
