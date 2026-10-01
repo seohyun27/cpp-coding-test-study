@@ -412,17 +412,14 @@ long long c = a * b;
 ```
 
 
-
 <br>
-
-
----
-
-
+<br>
 <br>
 
 
 # SQL문을 활용한 코딩 테스트 연습
+
+<br>
 
 ## 조건
 `SELECT _ FROM`, `WHERE`, `AND`, `OR`, `BETWEEN _ AND _`, `LIKE '%abc%'`
@@ -435,8 +432,17 @@ SELECT * FROM MEMBER
 WHERE GENDER = 'W'
     AND (AGE = 20 OR AGE = 30)
     AND MEMBER_NAME IN ('철수', '영희')
-    AND ACCESS_DATE BETWEEN 10 AND 1000
+    AND ACCESS_COUNT BETWEEN 10 AND 1000
     AND MEMBER_ID LIKE '%000'; // 멤버 ID가 000으로 끝나는 사람
+```
+
+### DISTINCT
+- SELECT 바로 뒤에서 사용
+- MEMBER에서 GENDER와 AGE를 추출한 뒤 GENDER와 AGE에 같은 데이터를 가진 완전히 중복된 행이 있다면 제거
+
+```sql
+SELECT DISTINCT GENDER, AGE
+FROM MEMBER;
 ```
 
 
@@ -500,4 +506,122 @@ LIMIT 1; -- 가장 나이가 적은 사람 (나이가 같으면 ID가 큰 사람
 <br>
 
 
-## 합치기
+## JOIN
+`JOIN ... ON`, `LEFT JOIN`
+- MEMBER와 ORDERS 테이블이 있을 때 두 테이블을 합칠 수 있음
+- MEMBER_ID를 기준으로 MEMBER와 ORDERS를 JOIN하면 JOIN된 테이블이 출력값이 됨 (여기서 선택적으로 출력 가능)
+
+```sql
+SELECT *
+FROM ORDERS AS O
+JOIN MEMBER AS M
+    ON O.MEMBER_ID = M.ID AND ...
+WHERE ...;
+```
+
+- 여러 테이블을 한거번에 JOIN 가능
+- JOIN이므로 ON 조건에 맞는 데이터만이 추출
+    - LEFT JOIN : FROM에 쓴 테이블을 기준으로 추출
+    - RIGHT JOIN : JOIN 당하는 테이블을 기준으로 추출
+- LEFT 혹은 RIGHT JOIN에서 없는 행은 NULL로 채워짐. 이를 이용해 IS NULL로 한쪽 테이블에만 있는 정보를 골라낼 수 있음
+
+### 같은 테이블을 두 번 붙이는 경우
+- **(부모-자식) (상사-직원)과 같은 관계가 한 테이블에 표시되어 있을 때**
+- 하나를 부모 테이블 하나를 자식 테이블이라고 분리하여 생각
+- 이때 같은 테이블을 두 번 붙이는 풀이가 필요하다
+
+
+
+<br>
+
+
+## 집계
+`COUNT`, `SUM`, `MAX`, `MIN`, `AVG`, `ROUND`
+- 하나의 열에서 행 전체의 값을 받아 하나의 값으로 계산함
+- 성적의 개수, 총합, 최고, 최저, 평균, 반올림 등등
+- NULL값은 집계에 포함되지 않는다
+
+### 기본 집계
+```sql
+SELECT COUNT(MEMBER_ID)
+FROM MEMBER;
+```
+
+### 중복을 제거한 집계
+COUNT가 DISTINCT를 포함해 col 전체를 감싸도록 작성
+
+```sql
+SELECT COUNT(DISTINCT MEMBER_NAME)
+FROM MEMBER;
+```
+
+### 전체 행 집계
+NULL과 관계 없이 해당 테이블의 전체 행 개수를 세게 됨
+
+```sql
+SELECT COUNT(*)
+FROM MEMBER;
+```
+
+### ROUND
+- ROUND(값, 남길 소수 자릿수) 형태로 사용
+- 주로 AVG로 구한 평균 값에서 소수점 자리수를 맞추는데 사용
+
+```sql
+SELECT ROUND(AVG(AGE), 0) AS AGE_AVG
+FROM MEMBER;
+```
+- 소수점 없이 정수형으로 반올림한 평균값을 AGE_AVG라는 열 이름으로 출력
+
+
+<br>
+
+
+## 서브쿼리
+- 괄호 안의 쿼리가 먼저 실행되어 결과가 나오고 그 결과를 바탕으로 메인 쿼리가 실행됨
+- WHERE 등에서 사용
+- 괄호 안에 SELECT 문을 하나 더 사용할 것
+
+```sql
+SELECT *
+FROM PRODUCT
+WHERE PRICE = (SELECT MAX(PRICE) FROM PRODUCT);
+```
+- PRODUCT 테이블에서 최고 가격을 가진 물건들의 정보만 출력하는 쿼리
+- 최고 가격의 물건을 하나만 찾고자 한다면 `ORDER BY PRICE DESC LIMIT 1;` 로 풀 수 있음
+
+
+<br>
+
+
+## 묶기
+`GROUP BY`, `HAVING`
+- GROUP BY는 열을 지정하여 지정한 열의 값이 같은 행을 하나의 그룹으로 묶음
+- GROUP BY를 쓰면 SELECT에는 GROUP BY를 한 기준 열과 집계함수를 사용한 결과만 사용할 수 있음
+- **WHERE은 열 값에만 적용. 집계 함수의 결과를 필터링으로 걸고 싶다면 반드시 HAVING을 사용할 것**
+
+### GROUP BY
+- 성별에 따른 인원수 세기
+
+```sql
+SELECT GENDER, COUNT(*) AS COUNT
+FROM MEMBER
+GROUP BY GENDER
+```
+
+### HAVING
+- 동명이인이 존재하는 이름만 찾기
+- GROUP BY로 묶은 MEMBER_NAME에 대한 COUNT(*)
+
+```sql
+SELECT MEMBER_NAME
+FROM MEMBER
+GROUP BY MEMBER_NAME
+HAVING COUNT(*) > 1;
+```
+
+
+
+---
+
+조건 분기	CASE WHEN ... THEN ... ELSE ... END
