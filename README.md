@@ -410,3 +410,94 @@ int int_a = str_a[0] - '0';
 long long a = 10000, b = 10000;
 long long c = a * b;
 ```
+
+
+
+<br>
+
+
+---
+
+
+<br>
+
+
+# SQL문을 활용한 코딩 테스트 연습
+
+## 조건
+`SELECT _ FROM`, `WHERE`, `AND`, `OR`, `BETWEEN _ AND _`, `LIKE '%abc%'`
+- AND와 OR을 섞어 사용할 때 소괄호를 사용해 우선순위를 표시
+- 한 번에 여러 개의 값을 묶을 때 소괄호 사용
+- LIKE문의 문자열에 %는 해당자리에 추가 글자를 허용하겠다는 뜻
+
+```sql
+SELECT * FROM MEMBER
+WHERE GENDER = 'W'
+    AND (AGE = 20 OR AGE = 30)
+    AND MEMBER_NAME IN ('철수', '영희')
+    AND ACCESS_DATE BETWEEN 10 AND 1000
+    AND MEMBER_ID LIKE '%000'; // 멤버 ID가 000으로 끝나는 사람
+```
+
+
+<br>
+
+
+## NULL
+`IS NULL`, `IS NOT NULL`, `IFNULL(col, '대체값')`
+- IS NULL, IS NOT NULL은 WHERE문의 조건으로 사용
+- IFNULL은 SELECT와 함께 사용. 사용자에게 보여지는 출력 결과를 대체함
+
+### IS NULL 사용
+```sql
+WHERE AGE IS NULL
+    AND MEMBER_NAME IS NOT NULL;
+```
+
+### IFNULL 사용
+```sql
+SELECT MEMBER_ID, IFNULL(GENDER, 'X') AS GENDER
+FROM MEMBER;
+```
+- 멤버 ID와 성별을 가져오는데, 만약 성별이 NULL이라면 'X'로 대체하여 출력
+- 이때 열의 이름이 IFNULL(GENDER, 'X')그대로 출력되므로 `AS`를 붙여 출력 열의 이름을 GENDER로 변경
+
+
+<br>
+
+
+## 날짜
+`YEAR()`, `MONTH()`, `DAY()`, `DATE_FORMAT(col, '%Y-%m-%d')`
+- 열의 타입이 DATE 또는 DATETIME일 때 사용 가능
+- 날짜 포멧에 년도 `Y`는 반드시 대문자, 나머지는 소문자를 사용할 것
+- '같다'를 표현할 때 '='을 하나만 쓸 것
+
+```sql
+SELECT DATE_FORMAT(DATE_OF_BIRTH, '%Y년 %m월 %d일') AS DATE_OF_BIRTH
+FROM MEMBER
+WHERE YEAR(DATE_OF_BIRTH) = 2000;
+```
+
+
+<br>
+
+
+## 정렬
+`ORDER BY col ASC/DESC`, `LIMIT`
+- col를 기준으로 SELECT로 뽑아낸 행들을 정렬
+- ASC는 오름차순. ORDER BY의 기본값이므로 생략 가능
+- ASC와 DESC는 원하는 열 뒤에서 사용하며 암기할 것
+- **ORDER BY에 여러 열을 쓰면 앞에 쓴 열이 1순위**
+- LIMIT는 정렬 후 자르기이므로 ORDER BY 뒤에서 사용
+
+```sql
+SELECT * FROM MEMBER
+ORDER BY MEMBER_ID DESC, AGE ASC
+LIMIT 1; -- 가장 나이가 적은 사람 (나이가 같으면 ID가 큰 사람)
+```
+
+
+<br>
+
+
+## 합치기
