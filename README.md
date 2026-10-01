@@ -410,7 +410,7 @@ int int_a = str_a[0] - '0';
 long long a = 10000, b = 10000;
 long long c = a * b;
 ```
-
+---
 
 <br>
 <br>
@@ -419,7 +419,10 @@ long long c = a * b;
 
 # SQL문을 활용한 코딩 테스트 연습
 
-<br>
+## 기본 문법
+- 열 이름에는 작은따옴표 사용 없음
+- 숫자에는 작은따옴표 사용 없음
+- 데이터 값들 'W', '여자', '철수', '%000' 같은 것들은 작은 따옴표로 감싸서 사용
 
 ## 조건
 `SELECT _ FROM`, `WHERE`, `AND`, `OR`, `BETWEEN _ AND _`, `LIKE '%abc%'`
@@ -450,9 +453,8 @@ FROM MEMBER;
 
 
 ## NULL
-`IS NULL`, `IS NOT NULL`, `IFNULL(col, '대체값')`
-- IS NULL, IS NOT NULL은 WHERE문의 조건으로 사용
-- IFNULL은 SELECT와 함께 사용. 사용자에게 보여지는 출력 결과를 대체함
+`IS NULL`, `IS NOT NULL`
+- WHERE문의 조건으로 사용
 
 ### IS NULL 사용
 ```sql
@@ -460,13 +462,55 @@ WHERE AGE IS NULL
     AND MEMBER_NAME IS NOT NULL;
 ```
 
-### IFNULL 사용
+
+<br>
+
+
+## IFNULL
+`IFNULL(col, '대체값')`
+- **반드시 SELECT의 안에서 사용할 것**
+- 사용자에게 보여지는 **새로운 칼럼과 새로운 출력 결과**를 만들어냄
+
 ```sql
 SELECT MEMBER_ID, IFNULL(GENDER, 'X') AS GENDER
 FROM MEMBER;
 ```
-- 멤버 ID와 성별을 가져오는데, 만약 성별이 NULL이라면 'X'로 대체하여 출력
+- 멤버 ID와 성별을 가져오는데, 만약 성별이 NULL이라면 'X'로 출력
 - 이때 열의 이름이 IFNULL(GENDER, 'X')그대로 출력되므로 `AS`를 붙여 출력 열의 이름을 GENDER로 변경
+
+
+<br>
+
+
+## CASE ... WHEN ... THEN
+`CASE ... WHEN ... THEN ... ELSE ... END`
+- **반드시 SELECT의 안에서 사용할 것**
+- 사용자에게 보여지는 **새로운 칼럼과 새로운 출력 결과**를 만들어냄
+
+```sql
+SELECT MEMBER_ID,
+    CASE GENDER
+        WHEN 'W' THEN '여자'
+        WHEN 'M' THEN '남자'
+        ELSE '미상'
+    END AS 성별
+FROM MEMBER;
+
+-- 성별이라는 이름의 새 칼럼 생성
+```
+
+- 만약 부등호나 LIKE 같은 것들을 사용하여 특정 값이 아닌 **범위**를 비교하고 싶다면 아래와 같이 가능함
+
+```sql
+SELECT MEMBER_ID,
+    CASE
+        WHEN AGE < 20 THEN '청소년'
+        ELSE '성인'
+    END AS 나이
+FROM MEMBER;
+
+-- 나이라는 이름의 새 칼럼 생성
+```
 
 
 <br>
@@ -482,6 +526,17 @@ FROM MEMBER;
 SELECT DATE_FORMAT(DATE_OF_BIRTH, '%Y년 %m월 %d일') AS DATE_OF_BIRTH
 FROM MEMBER
 WHERE YEAR(DATE_OF_BIRTH) = 2000;
+```
+
+### DATEDIFF
+`DATEDIFF(끝 날짜, 시작 날짜)`
+- 끝 날짜, 시작 날짜 순서 주의
+- date different의 약자
+- 날짜 사이의 차이를 세어주는 함수
+- 만약 대여 문제의 경우 시작하는 날도 하루로 치므로 날짜 차이에 +1을 해줘야 함
+
+```sql
+WHERE DATEDIFF(END_DATE, START_DATE) >= 5
 ```
 
 
@@ -619,9 +674,3 @@ FROM MEMBER
 GROUP BY MEMBER_NAME
 HAVING COUNT(*) > 1;
 ```
-
-
-
----
-
-조건 분기	CASE WHEN ... THEN ... ELSE ... END
